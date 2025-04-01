@@ -15,7 +15,6 @@ const Feature: React.FC = () => {
       const scrollDelta = scrollPosition - lastScrollY; 
 
       if (scrollDelta > 0) {
-
         setRotate((prev) => Math.max(prev - Math.abs(scrollDelta) / 10, 0));
         setTranslateY((prev) => Math.min((prev + Math.abs(scrollDelta) ), window.innerHeight * 0.15));
       } else {

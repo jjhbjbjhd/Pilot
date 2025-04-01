@@ -60,9 +60,9 @@ const Info: React.FC = () => {
             return brightColors[Math.floor(Math.random() * brightColors.length)];
         };
 
-        generateStars("#stars", 20);
-        generateStars("#stars2", 20);
-        generateStars("#stars3", 20);
+        generateStars("#stars", 30);
+        generateStars("#stars2", 30);
+        generateStars("#stars3", 30);
     }, []);
 
     return (
