@@ -1,0 +1,53 @@
+/* 🌌 星空背景 */
+.about-info {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    background: linear-gradient(to bottom, #000000 20%, #383b84 );
+    transition: opacity 1s ease-in-out;
+}
+
+/* 星星层 */
+#stars, #stars2, #stars3 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* 让星星沿 45° 角运动，并循环回到起点 */
+@keyframes moveStars {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-150vh) translateX(150vw); /* 让星星继续飘出屏幕 */
+        opacity: 1; /* 不让星星消失 */
+    }
+}
+
+/* 星星样式 */
+.star {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    background-color: var(--color);
+    border-radius: 50%;
+    filter: blur(var(--blur));
+    animation: moveStars linear infinite;
+    animation-duration: var(--duration);
+}
+
+/* 让不同层次的星星有不同速度 */
+#stars .star { --duration: 200s; }
+#stars2 .star { --duration: 100s; }
+#stars3 .star { --duration: 60s; }
+
+/* 让星星在屏幕外就开始 */
+#stars .star, #stars2 .star, #stars3 .star {
+    top: calc(100% * var(--y)); /* 让一部分星星从屏幕外进入 */
+    left: calc(100% * var(--x));
+}

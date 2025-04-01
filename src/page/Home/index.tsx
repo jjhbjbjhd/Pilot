@@ -1,4 +1,4 @@
-import Toolbar from "../../component/Toolbar";
+import Toolbar from "@components/Toolbar";
 
 const Home: React.FC = () => {
     return (

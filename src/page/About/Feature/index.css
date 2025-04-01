@@ -1,0 +1,21 @@
+@keyframes glowRotate {
+    0% {
+        border: 0px 0px 10px rgba(219, 96, 96, 0.8);
+    }
+    25% {
+        border: 5px 5px 15px rgba(191, 209, 28, 0.8);
+    }
+    50% {
+        border: 0px 10px 20px rgba(22, 228, 66, 0.8);
+    }
+    75% {
+        border: -5px 5px 15px rgba(15, 52, 218, 0.8);
+    }
+    100% {
+        border: 0px 0px 10px rgba(255, 11, 161, 0.8);
+    }
+}
+
+.glow-border {
+    animation: glowRotate 1s infinite linear;
+}

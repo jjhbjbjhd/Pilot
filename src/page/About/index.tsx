@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import InfoNavigation from "@components/Navigation";
+import Info from "./Info";
+import Feacture from "./Feature";
 
 const About: React.FC = () => {
   // 当前选中的 section
@@ -32,39 +35,30 @@ const About: React.FC = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex bg-[#000000] m-0 p-0">
       {/* 页面内容 */}
-      <div className="flex-grow p-8">
-        <section id="about" className="my-32">
-          <h1 className="text-3xl font-bold mb-4">About Page</h1>
-          <p>This is the about page.</p>
+      <div className="flex-grow p-0">
+        <section id="about" className="min-h-screen text-white">
+          <Info />
         </section>
-        <section id="services" className="my-32">
-          <h1 className="text-3xl font-bold mb-4">Services</h1>
-          <p>These are the services we provide.</p>
+
+        <section id="feature" className="min-h-screen text-white">
+          <Feacture />
         </section>
-        <section id="contact" className="my-32">
+
+        <section id="hub" className="min-h-screen text-white">
+          <h1 className="text-3xl font-bold mb-4">Contact</h1>
+          <p>Get in touch with us!</p>
+        </section>
+
+        <section id="contact" className="min-h-screen text-white">
           <h1 className="text-3xl font-bold mb-4">Contact</h1>
           <p>Get in touch with us!</p>
         </section>
       </div>
 
       {/* 右侧导航栏 */}
-      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 p-4">
-        <div className="flex flex-col gap-4">
-          {["about", "services", "contact"].map((id) => (
-            <button
-              key={id}
-              onClick={() => scrollToSection(id)}
-              className={`py-2 px-4 rounded transition ${
-                activeSection === id ? "bg-blue-500 text-white" : "bg-gray-200"
-              }`}
-            >
-              {id.charAt(0).toUpperCase() + id.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
+      <InfoNavigation activeSection={activeSection} onScrollToSection={scrollToSection} />
     </div>
   );
 };

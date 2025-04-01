@@ -1,6 +1,8 @@
+@import "antd/dist/reset.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 
 :root {
@@ -17,4 +19,26 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+
+::-webkit-scrollbar {
+  width: 6px;  
+}
+
+
+::-webkit-scrollbar-track {
+  background-color: #000000;  
+
+}
+
+
+::-webkit-scrollbar-thumb {
+  background-color: #292929;    
+  border-radius: 10px;       
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #292929;    
 }
