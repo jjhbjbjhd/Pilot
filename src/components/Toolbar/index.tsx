@@ -20,7 +20,7 @@ export default function Toolbar() {
     return (
         <div 
             data-tauri-drag-region 
-            className="titlebar flex items-center justify-between bg-main-black text-white h-10 px-2 select-none"
+            className="titlebar flex items-center justify-between bg-[#0000] text-white h-10 px-2 select-none"
         >
             <div className="flex space-x-2">
                 <button 

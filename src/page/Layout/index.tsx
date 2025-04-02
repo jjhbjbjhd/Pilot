@@ -4,6 +4,7 @@ import Toolbar from "@components/Toolbar";
 const Core: React.FC = () => {
   const [leftPanelWidth, setLeftPanelWidth] = useState(300);
   const [rightPanelWidth, setRightPanelWidth] = useState(300);
+  const [midPanelHeight, setMidPanelHeight] = useState(150);
 
   const leftPanelRef = useRef<HTMLDivElement | null>(null);
   const rightPanelRef = useRef<HTMLDivElement | null>(null);
@@ -13,53 +14,34 @@ const Core: React.FC = () => {
   const [isDraggingLeft, setIsDraggingLeft] = useState(false);
   const [isDraggingRight, setIsDraggingRight] = useState(false);
 
-  // Mouse event to handle left panel dragging
   const handleMouseDownLeft = (e: React.MouseEvent) => {
     setIsDraggingLeft(true);
-    // Prevent text selection
     e.preventDefault();
   };
 
   const handleMouseMoveLeft = (e: MouseEvent) => {
     if (isDraggingLeft) {
       const deltaX = e.movementX;
-      setLeftPanelWidth((prevWidth) => {
-        if (prevWidth + deltaX >  window.innerWidth * 0.4) {
-          return window.innerWidth * 0.4;
-        }
-        return prevWidth + deltaX});
+      setLeftPanelWidth((prevWidth) => Math.min(prevWidth + deltaX, window.innerWidth * 0.4));
     }
   };
 
-  const handleMouseUpLeft = () => {
-    setIsDraggingLeft(false);
-  };
+  const handleMouseUpLeft = () => setIsDraggingLeft(false);
 
-  // Mouse event to handle right panel dragging
   const handleMouseDownRight = (e: React.MouseEvent) => {
     setIsDraggingRight(true);
-    // Prevent text selection
     e.preventDefault();
   };
 
   const handleMouseMoveRight = (e: MouseEvent) => {
     if (isDraggingRight) {
       const deltaX = -e.movementX;
-      setRightPanelWidth((prevWidth) => {
-        if (prevWidth + deltaX >  window.innerWidth * 0.4) {
-            return window.innerWidth * 0.4;
-        }
-        return prevWidth + deltaX
-
-      });
+      setRightPanelWidth((prevWidth) => Math.min(prevWidth + deltaX, window.innerWidth * 0.4));
     }
   };
 
-  const handleMouseUpRight = () => {
-    setIsDraggingRight(false);
-  };
+  const handleMouseUpRight = () => setIsDraggingRight(false);
 
-  // Attach event listeners when dragging starts
   React.useEffect(() => {
     if (isDraggingLeft || isDraggingRight) {
       document.addEventListener("mousemove", handleMouseMoveLeft);
@@ -74,7 +56,6 @@ const Core: React.FC = () => {
     }
 
     return () => {
-      // Clean up event listeners when the component is unmounted or dragging ends
       document.removeEventListener("mousemove", handleMouseMoveLeft);
       document.removeEventListener("mousemove", handleMouseMoveRight);
       document.removeEventListener("mouseup", handleMouseUpLeft);
@@ -85,42 +66,36 @@ const Core: React.FC = () => {
   return (
     <div className="h-screen flex flex-col bg-black">
       <Toolbar />
-
       <div className="flex flex-row text-white flex-grow">
-        {/* Left panel */}
         <div
           ref={leftPanelRef}
-          className=" border-r border-white "
+          className="shadow-sm border-r border-gray-200/30"
           style={{ minWidth: `300px`, width: `${leftPanelWidth}px` }}
         >
           1
         </div>
-
-        {/* Left draggable bar */}
         <div
           ref={leftDragRef}
-            className="w-px bg-transparent cursor-col-resize  hover:w-1 hover:bg-gray-500"
+          className="w-0.5 bg-[#00000] hover:bg-gray-300 hover:w-1 cursor-col-resize"
           onMouseDown={handleMouseDownLeft}
         />
-
-        {/* Right part of the layout */}
         <div className="flex flex-col flex-grow">
-          <div className=" border-b border-white p-2">头部</div>
+          <div className="shadow-xs border-b border-gray-200/30 p-2">头部</div>
           <div className="flex flex-row flex-grow">
-            <div className=" border border-white flex-1">
-                2
-            </div>
+            <div className="border-none border-gray-200/30 flex-1">
 
-            {/* Right draggable bar */}
+              <div>内容</div>
+              <div className="h-0.5 bg-[#00000] hover:bg-gray-300 hover:h-1 cursor-row-resize"></div>
+              <div className="border-t border-gray-200/30 p-2">console</div>
+            
+            </div>
             <div
               ref={rightDragRef}
-            className="w-px bg-transparent cursor-col-resize hover:w-1 hover:bg-gray-500"
+              className="w-0.5 bg-[#00000] hover:bg-gray-300 hover:w-1 cursor-col-resize"
               onMouseDown={handleMouseDownRight}
             />
-
-            {/* Right panel */}
             <div
-              className=" border-l border-white "
+              className="shadow-sm border-l border-gray-200/30"
               ref={rightPanelRef}
               style={{ minWidth: `300px`, width: `${rightPanelWidth}px` }}
             >
