@@ -7,14 +7,14 @@ const AppRouter: React.FC = () => {
     <Router>
   
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<About />} />
       </Routes>
 
-      <nav className="flex gap-4 p-4 bg-gray-100">
+      {/* <nav className="flex gap-4 p-4 bg-gray-100">
         <Link to="/" className="text-blue-500">首页</Link>
         <Link to="/about" className="text-blue-500">关于</Link>
-      </nav>
+      </nav> */}
     </Router>
   );
 };

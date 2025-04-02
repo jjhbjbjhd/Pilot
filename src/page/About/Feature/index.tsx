@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import "./index.css"
 
 const Feature: React.FC = () => {
@@ -8,6 +8,7 @@ const Feature: React.FC = () => {
   const [rotate, setRotate] = useState(initialRotate);
   const [translateY, setTranslateY] = useState(initialTranslateY);
   const [lastScrollY, setLastScrollY] = useState(0); 
+  const featureBoxTopRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,12 +16,46 @@ const Feature: React.FC = () => {
       const scrollDelta = scrollPosition - lastScrollY; 
 
       if (scrollDelta > 0) {
-        setRotate((prev) => Math.max(prev - Math.abs(scrollDelta) / 10, 0));
-        setTranslateY((prev) => Math.min((prev + Math.abs(scrollDelta) ), window.innerHeight * 0.15));
+        setRotate((prev) => {
+          if(featureBoxTopRef.current){
+            
+            const top = featureBoxTopRef.current.getBoundingClientRect()?.top
+            if(!top) return prev
+            if(top < window.innerHeight * 0.6) return Math.max(prev - Math.abs(scrollDelta) / 10, 0)
+          }
+          return prev
+        });
+        setTranslateY((prev) => {
+          if(featureBoxTopRef.current){
+            
+            const top = featureBoxTopRef.current.getBoundingClientRect()?.top
+            console.log(top,scrollPosition)
+            if(!top) return prev
+            if(top < window.innerHeight * 0.6) return -initialTranslateY *0.5
+          }
+
+          return prev
+        });
       } else {
-      
-        setRotate((prev) => Math.min(prev + Math.abs(scrollDelta) / 10, initialRotate));
-        setTranslateY((prev) => Math.max((prev - Math.abs(scrollDelta) / 5)-window.innerHeight * 0.3, initialTranslateY));
+    
+        setRotate((prev) => {
+          if(featureBoxTopRef.current){
+            const top = featureBoxTopRef.current.getBoundingClientRect()?.top
+            if(!top) return prev
+            if(top > window.innerHeight*0.6) return Math.min(prev + Math.abs(scrollDelta) / 10, initialRotate)
+
+          }
+          return prev
+        });
+        setTranslateY((prev) => {
+          if(featureBoxTopRef.current){
+            const top = featureBoxTopRef.current.getBoundingClientRect()?.top
+            if(!top) return prev
+            if(top > window.innerHeight*0.6) return initialTranslateY
+
+          }
+          return prev
+        });
       }
 
       setLastScrollY(scrollPosition);
@@ -35,6 +70,7 @@ const Feature: React.FC = () => {
   return (
     <div
       id="feature_box"
+      ref={featureBoxTopRef}
       className="flex flex-col items-center min-h-screen gap-4 font-bold text-base text-white transition-opacity duration-700 relative"
     >
       <div className="text-2xl p-4">button</div>

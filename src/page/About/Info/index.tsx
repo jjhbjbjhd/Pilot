@@ -1,6 +1,6 @@
 
 import starryImage from "@components/bg-earth.webp"; 
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import "./index.css";
 import { Button } from 'antd';
 import { motion } from "framer-motion";
@@ -12,7 +12,7 @@ interface WaveTextProps {
 
 const WaveText: React.FC<WaveTextProps> = ({ text, delay = 0 }) => {
     return (
-      <div className="text-6xl font-bold italic tracking-tight flex overflow-hidden">
+      <div className="text-7xl font-bold italic tracking-tight flex overflow-hidden">
         {text.split("").map((char, index) => (
           <motion.span
             key={index}
@@ -33,7 +33,7 @@ const WaveText: React.FC<WaveTextProps> = ({ text, delay = 0 }) => {
   };
 
 const Info: React.FC = () => {
-
+    const [opacity, setOpacity] = useState(1);
     useEffect(() => {
         const generateStars = (selector: string, count: number) => {
             const container = document.querySelector(selector);
@@ -60,19 +60,38 @@ const Info: React.FC = () => {
             return brightColors[Math.floor(Math.random() * brightColors.length)];
         };
 
-        generateStars("#stars", 30);
-        generateStars("#stars2", 30);
-        generateStars("#stars3", 30);
+        generateStars("#stars", 40);
+        generateStars("#stars2", 40);
+        generateStars("#stars3", 40);
     }, []);
 
+    useEffect(() => {
+        const handleScroll = () => {
+          const scrollTop = window.scrollY; // 获取滚动位置
+          const maxFadeHeight = window.innerHeight * 0.9; 
+          setOpacity(1 - Math.min(scrollTop / maxFadeHeight, 1)); // 动态调整透明度
+        };
+    
+        window.addEventListener("scroll", handleScroll);
+    
+        // 清理事件监听
+        return () => {
+          window.removeEventListener("scroll", handleScroll);
+        };
+      }, []);
+
     return (
-        <div className="about-info relative">
+        <div className="about-info relative" style={{ 
+            opacity ,
+            WebkitMaskImage: "linear-gradient(to bottom, rgba(0, 0, 0, 1) 95%, rgba(0, 0, 0, 0) 100%)",
+            maskImage: "linear-gradient(to bottom, rgba(0, 0, 0, 1) 95%, rgba(0, 0, 0, 0) 100%)",
+            }}>
            
             <div id="stars"></div>
             <div id="stars2"></div>
             <div id="stars3"></div>
 
-            <div className="flex flex-col items-center justify-center min-h-screen gap-4 font-bold text-base text-white transition-opacity duration-700">
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4 font-bold text-base text-white transition-opacity duration-700 gap-10">
                 <div className="flex items-center gap-2">
                     <Button style={{ backgroundColor: "#ffb224",color: "black",borderRadius: "30px",border: "none",padding: "10px 20px",fontWeight: "bold",transition: "all 0.3s ease"}}>
                         News
@@ -86,8 +105,11 @@ const Info: React.FC = () => {
                         <span className="text-xs text-black border border-yellow-400 px-1 py-1 rounded-md bg-yellow-300 font-bold">Client</span>
                     </div>  
                 </div>
-                <WaveText text="Built for you" delay={0} />
-                <WaveText text="the Super Individual" delay={0.5} />
+                <div className="flex flex-col gap-1 items-center justify-center">
+                    <WaveText text="Built for you" delay={0} />
+                    <WaveText text="the Super Individual" delay={0.5} />
+                </div>
+               
 
                 <div className="flx-col  font-bold  tracking-tight">
                     <div>在 ToolHub 中将你的 工作 中工具汇聚一处：根据个性化需求灵活</div>

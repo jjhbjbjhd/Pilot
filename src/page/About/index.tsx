@@ -3,6 +3,7 @@ import InfoNavigation from "@components/Navigation";
 import Info from "./Info";
 import Feacture from "./Feature";
 import Hub from "./Hub";
+import Author from "./Author";
 
 const About: React.FC = () => {
   // 当前选中的 section
@@ -52,8 +53,7 @@ const About: React.FC = () => {
         </section>
 
         <section id="contact" className="min-h-screen text-white">
-          <h1 className="text-3xl font-bold mb-4">Contact</h1>
-          <p>Get in touch with us!</p>
+          <Author />
         </section>
       </div>
 
