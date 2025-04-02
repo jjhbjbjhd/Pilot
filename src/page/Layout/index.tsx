@@ -2,17 +2,32 @@ import React, { useState, useRef } from "react";
 import Toolbar from "@components/Toolbar";
 
 const Core: React.FC = () => {
-  const [leftPanelWidth, setLeftPanelWidth] = useState(300);
-  const [rightPanelWidth, setRightPanelWidth] = useState(300);
-  const [midPanelHeight, setMidPanelHeight] = useState(150);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(window.innerWidth * 0.2);
+  const [rightPanelWidth, setRightPanelWidth] = useState(window.innerWidth * 0.2);
+  const [midPanelHeight, setMidPanelHeight] = useState(window.innerHeight * 0.7);
 
   const leftPanelRef = useRef<HTMLDivElement | null>(null);
   const rightPanelRef = useRef<HTMLDivElement | null>(null);
   const leftDragRef = useRef<HTMLDivElement | null>(null);
   const rightDragRef = useRef<HTMLDivElement | null>(null);
+  const midDragRef = useRef<HTMLDivElement | null>(null);
+  const midPanelRef = useRef<HTMLDivElement | null>(null);
 
   const [isDraggingLeft, setIsDraggingLeft] = useState(false);
   const [isDraggingRight, setIsDraggingRight] = useState(false);
+  const [isDraggingMid, setIsDraggingMid] = useState(false);
+
+  const handleMouseDownMid = (e: React.MouseEvent) => {
+    setIsDraggingMid(true);
+    e.preventDefault();
+  }
+  const handleMouseMoveMid = (e: MouseEvent) => {
+    if (isDraggingMid) {
+      const deltaY = e.movementY;
+      setMidPanelHeight((prevHeight) => Math.min(prevHeight + deltaY, window.innerHeight * 0.7));
+    }
+  }
+  const handleMouseUpMid = () => setIsDraggingMid(false);
 
   const handleMouseDownLeft = (e: React.MouseEvent) => {
     setIsDraggingLeft(true);
@@ -43,16 +58,20 @@ const Core: React.FC = () => {
   const handleMouseUpRight = () => setIsDraggingRight(false);
 
   React.useEffect(() => {
-    if (isDraggingLeft || isDraggingRight) {
+    if (isDraggingLeft || isDraggingRight || isDraggingMid) {
       document.addEventListener("mousemove", handleMouseMoveLeft);
       document.addEventListener("mousemove", handleMouseMoveRight);
       document.addEventListener("mouseup", handleMouseUpLeft);
       document.addEventListener("mouseup", handleMouseUpRight);
+      document.addEventListener("mousemove", handleMouseMoveMid);
+      document.addEventListener("mouseup", handleMouseUpMid);
     } else {
       document.removeEventListener("mousemove", handleMouseMoveLeft);
       document.removeEventListener("mousemove", handleMouseMoveRight);
       document.removeEventListener("mouseup", handleMouseUpLeft);
       document.removeEventListener("mouseup", handleMouseUpRight);
+      document.removeEventListener("mousemove", handleMouseMoveMid);
+      document.removeEventListener("mouseup", handleMouseUpMid);
     }
 
     return () => {
@@ -60,8 +79,10 @@ const Core: React.FC = () => {
       document.removeEventListener("mousemove", handleMouseMoveRight);
       document.removeEventListener("mouseup", handleMouseUpLeft);
       document.removeEventListener("mouseup", handleMouseUpRight);
+      document.removeEventListener("mousemove", handleMouseMoveMid);
+      document.removeEventListener("mouseup", handleMouseUpMid);
     };
-  }, [isDraggingLeft, isDraggingRight]);
+  }, [isDraggingLeft, isDraggingRight, isDraggingMid]);
 
   return (
     <div className="h-screen flex flex-col bg-black">
@@ -70,7 +91,7 @@ const Core: React.FC = () => {
         <div
           ref={leftPanelRef}
           className="shadow-sm border-r border-gray-200/30"
-          style={{ minWidth: `300px`, width: `${leftPanelWidth}px` }}
+          style={{ minWidth: `${window.innerWidth * 0.1}px`, width: `${leftPanelWidth}px` }}
         >
           1
         </div>
@@ -84,8 +105,10 @@ const Core: React.FC = () => {
           <div className="flex flex-row flex-grow">
             <div className="border-none border-gray-200/30 flex-1">
 
-              <div>内容</div>
-              <div className="h-0.5 bg-[#00000] hover:bg-gray-300 hover:h-1 cursor-row-resize"></div>
+              <div
+                ref={midPanelRef}
+                style={{ minHeight: `${window.innerWidth * 0.025}px` , height: `${midPanelHeight}px` }}>内容</div>
+              <div className="h-0.5 bg-[#00000] hover:bg-gray-300 hover:h-1 cursor-row-resize" ref={midDragRef} onMouseDown={handleMouseDownMid} />
               <div className="border-t border-gray-200/30 p-2">console</div>
             
             </div>
@@ -97,7 +120,7 @@ const Core: React.FC = () => {
             <div
               className="shadow-sm border-l border-gray-200/30"
               ref={rightPanelRef}
-              style={{ minWidth: `300px`, width: `${rightPanelWidth}px` }}
+              style={{ minWidth: `${window.innerWidth * 0.1}px`, width: `${rightPanelWidth}px` }}
             >
               3
             </div>
