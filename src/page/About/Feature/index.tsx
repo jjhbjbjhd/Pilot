@@ -73,7 +73,14 @@ const Feature: React.FC = () => {
       ref={featureBoxTopRef}
       className="flex flex-col items-center min-h-screen gap-4 font-bold text-base text-white transition-opacity duration-700 relative"
     >
-      <div className="text-2xl p-4">button</div>
+      <div className="bg-[#25223c] items-center text-lg p-4 flex flex-row gap-4 m-10 border-none border-gray-400 rounded-xl bg-[#2E2D3A] h-12 shadow-md shadow-gray-800/30 backdrop-blur-md opacity-70">
+        <div className="px-4 py-2 hover:bg-gray-300 transition-all duration-200 cursor-pointer rounded-lg m-o p-0">概览</div>
+        <div className="px-4 py-2 hover:bg-gray-300 transition-all duration-200 cursor-pointer rounded-lg m-o p-0">TODO</div>
+        <div className="px-4 py-2 hover:bg-gray-300 transition-all duration-200 cursor-pointer rounded-lg m-o p-0">TODO</div>
+        <div className="px-4 py-2 hover:bg-gray-300 transition-all duration-200 cursor-pointer rounded-lg m-o p-0">TODO</div>
+        <div className="px-4 py-2 hover:bg-gray-300 transition-all duration-200 cursor-pointer rounded-lg m-o p-0">TODO</div>
+      </div>
+
       <div
         className={`bg-[#000000] flex flex-col justify-center items-center w-4/5 h-4/5 absolute transform -translate-x-1/2 z-10 rounded-lg 
         ${rotate === 0 ? "glow-border" : ""}`} 

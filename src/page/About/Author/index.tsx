@@ -4,7 +4,7 @@ import author2 from "@components/img-2.avif";
 import author3 from "@components/img-3.avif";
 import author4 from "@components/img-4.avif";
 import author5 from "@components/img-5.avif";
-import author6 from "@components/img-6.avif";
+import author6 from "@components/author.png";
 
 const authors = [
   { img: author1, desc: "介绍1" },
@@ -12,7 +12,7 @@ const authors = [
   { img: author3, desc: "介绍3" },
   { img: author4, desc: "介绍4" },
   { img: author5, desc: "介绍5" },
-  { img: author6, desc: "介绍6" },
+  { img: author6, desc: "Shengwei.Liu" },
 ];
 
 const Author: React.FC = () => {
@@ -75,17 +75,17 @@ const Author: React.FC = () => {
                     transition: "transform 0.3s ease-out, scale 0.3s ease-out",
                 }}
                 >
-                <img src={author.img} className="w-full h-full rounded-full" />
+                <img src={author.img} className="w-full h-full rounded-full object-cover" />
                 </div>
 
                 {/* 介绍文本 */}
-                <span
+                <div
                     className={`text-sm opacity-0 transition-opacity duration-300 ${
                         isHovered ? "opacity-100" : ""
                     }`}
                 >
                     {author.desc}
-                </span>
+                </div>
           </div>
         );
       })}

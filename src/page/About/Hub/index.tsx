@@ -2,8 +2,11 @@ import { Button } from 'antd';
 import githubImage from "@components/github.png"; 
 import { useNavigate } from "react-router-dom";
 
+
+
 const Hub: React.FC = () => {
     const navigate = useNavigate();
+    const hubArray = ["CameraLink","生产汇总","GpoL分类","性能分析","图像增强","光谱计算"]
   return(
     <div className='min-h-screen'>
         <div className="flex flex-row   gap-4 font-bold text-base text-white transition-opacity duration-700 relative justify-center p-10">
@@ -41,14 +44,14 @@ const Hub: React.FC = () => {
         </div>
         <div className="flex flex-row gap-4 font-bold text-base text-white transition-opacity duration-700 relative justify-center p-10">
             <div className="grid grid-cols-3 grid-rows-2 gap-6">
-                {Array.from({ length: 6 }).map((_, index) => (
+                {hubArray.map((item, index) => (
                 <div 
-                    onClick={() => navigate(`/home`)}
+                    onClick={() => navigate(`/core`)}
                     key={index} 
                     className="bg-gray-800 w-[calc(80vw/3)] h-[calc(80vw/3*0.75)] flex items-center justify-center rounded-xl shadow-lg border border-gray-600 
                     transition-transform duration-300 ease-out hover:scale-105 hover:-translate-y-2 hover:shadow-[0_0_15px_cyan]"
                 >
-                    Card {index + 1}
+                    {item}
                 </div>
                 ))}
             </div>

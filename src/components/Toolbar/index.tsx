@@ -6,48 +6,48 @@ import { WindowIcon as WindowSolid } from "@heroicons/react/24/solid";
 const appWindow = new Window('main');
 export default function Toolbar() {
     function minimize() {
-        appWindow.minimize()
+        appWindow.minimize();
     }
     
     function maximize() {
-        appWindow.toggleMaximize()
+        appWindow.toggleMaximize();
     }
     
     function close() {
-        appWindow.close()
+        appWindow.close();
     }
     
-
-    return  (
-        <div data-tauri-drag-region className="titlebar flex items-center justify-between bg-main-black text-white h-10 px-2 select-none">
-            <div className="flex-1"></div> {/* 拖拽区域 */}
+    return (
+        <div 
+            data-tauri-drag-region 
+            className="titlebar flex items-center justify-between bg-main-black text-white h-10 px-2 select-none"
+        >
             <div className="flex space-x-2">
-                <button 
-                    id="titlebar-minimize"
-                    onClick={minimize}
-                    className="titlebar-button p-2 hover:bg-gray-700 rounded"
-                >
-                <MinusSolid className="w-4 h-4 text-white-80" />
-
-                </button>
-                
-                <button 
-                    id="titlebar-maximize"
-                    onClick={maximize}
-                    className="titlebar-button p-2 hover:bg-gray-700 rounded"
-                >
-                <WindowSolid className="w-4 h-4 text-white-80 "  />
-                </button>
-                
                 <button 
                     id="titlebar-close"
                     onClick={close}
-                    className="titlebar-button p-2 hover:bg-red-600 rounded"
+                    className="group w-4 h-4 flex items-center justify-center rounded-full bg-red-600"
                 >
-                <XMarkSolid className="w-4 h-4  text-white-80" />
+                    <XMarkSolid className="w-3 h-3 text-black opacity-0 group-hover:opacity-100 transition duration-200" />
+                </button>
+
+                <button 
+                    id="titlebar-maximize"
+                    onClick={maximize}
+                    className="group w-4 h-4 flex items-center justify-center rounded-full bg-[#ffbc2e]"
+                >
+                    <WindowSolid className="w-3 h-3 text-black opacity-0 group-hover:opacity-100 transition duration-200" />
+                </button>
+
+                <button 
+                    id="titlebar-minimize"
+                    onClick={minimize}
+                    className="group w-4 h-4 flex items-center justify-center rounded-full bg-[#27c841]"
+                >
+                    <MinusSolid className="w-3 h-3 text-black opacity-0 group-hover:opacity-100 transition duration-200" />
                 </button>
             </div>
-            </div>
-
-    )
+            <div className="flex-1"></div> 
+        </div>
+    );
 }
