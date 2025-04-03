@@ -1,4 +1,4 @@
-import Toolbar from "@components/Toolbar";
+import Toolbar from "@src/components/Toolbar";
 import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {

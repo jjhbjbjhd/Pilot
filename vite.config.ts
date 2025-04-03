@@ -32,8 +32,8 @@ export default defineConfig(async () => ({
   },
   resolve:{
     alias:{
-      "@": path.resolve("src"), 
-      "@components": path.resolve("src/components"),
+      "@src": path.resolve("src"), 
+      // "@components": path.resolve("src/components"),
     }
   }
 }));

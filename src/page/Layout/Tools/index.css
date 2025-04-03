@@ -1,0 +1,65 @@
+/* 移除 Collapse 面板的默认边框 */
+.ant-collapse {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+/* 取消每个面板的底部边框 */
+.ant-collapse-item {
+    border-bottom: none !important;
+}
+
+/* 取消展开面板的默认边框 */
+.ant-collapse-content {
+    border-top: none !important;
+    background-color: black !important; /* 维持背景色 */
+}
+
+/* 确保 Panel 标题也没有分割线 */
+.ant-collapse-header {
+    border-bottom: none !important;
+}
+/* 确保 Panel 标题也没有分割线 */
+.ant-collapse-content-box {
+    border-bottom: none !important;
+}
+
+/* .text-base font-medium {
+} */
+
+#collapse_item {
+    color: #5d5d5d !important;
+    font-size: 6px !important;
+}
+
+.ant-collapse-header {
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+.ant-collapse-content-box{
+    padding: 4px !important;
+}
+
+.anticon-up svg {
+    color: #5d5d5d !important; /* 设置颜色为灰色 */
+    font-size: 12px !important; /* 设置大小 */
+    width: 12px !important;  /* 宽度 */
+    height: 12px !important; /* 高度 */
+
+    :hover {
+        color: white !important; /* 设置鼠标悬停时的颜色 */
+    }
+}
+
+.anticon-down svg {
+    color: #5d5d5d !important; /* 设置颜色为灰色 */
+    font-size: 12px !important; /* 设置大小 */
+    width: 12px !important;  /* 宽度 */
+    height: 12px !important; /* 高度 */
+
+    :hover {
+        color: white !important; /* 设置鼠标悬停时的颜色 */
+    }
+}
+

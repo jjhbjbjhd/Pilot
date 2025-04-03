@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import author1 from "@components/img-1.avif";
-import author2 from "@components/img-2.avif";
-import author3 from "@components/img-3.avif";
-import author4 from "@components/img-4.avif";
-import author5 from "@components/img-5.avif";
-import author6 from "@components/author.png";
+import author1 from "@src/icons/img-1.avif";
+import author2 from "@src/icons/img-2.avif";
+import author3 from "@src/icons/img-3.avif";
+import author4 from "@src/icons/img-4.avif";
+import author5 from "@src/icons/img-5.avif";
+import author6 from "@src/icons/author.png";
 
 const authors = [
   { img: author1, desc: "介绍1" },

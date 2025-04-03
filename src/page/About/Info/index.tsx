@@ -1,5 +1,5 @@
 
-import starryImage from "@components/bg-earth.webp"; 
+import starryImage from "@src/icons/bg-earth.webp"; 
 import { useEffect,useState } from "react";
 import "./index.css";
 import { Button } from 'antd';

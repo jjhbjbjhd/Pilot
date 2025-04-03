@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import InfoNavigation from "@components/Navigation";
+import InfoNavigation from "@src/components/Navigation";
 import Info from "./Info";
 import Feacture from "./Feature";
 import Hub from "./Hub";

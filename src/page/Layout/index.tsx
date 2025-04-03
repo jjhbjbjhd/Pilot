@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
-import Toolbar from "@components/Toolbar";
+import Toolbar from "@src/components/Toolbar";
+import ToolsHub from "./Tools";
 
 const Core: React.FC = () => {
-  const [leftPanelWidth, setLeftPanelWidth] = useState(window.innerWidth * 0.2);
-  const [rightPanelWidth, setRightPanelWidth] = useState(window.innerWidth * 0.2);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(window.innerWidth * 0.25);
+  const [rightPanelWidth, setRightPanelWidth] = useState(window.innerWidth * 0.25);
   const [midPanelHeight, setMidPanelHeight] = useState(window.innerHeight * 0.7);
 
   const leftPanelRef = useRef<HTMLDivElement | null>(null);
@@ -90,10 +91,10 @@ const Core: React.FC = () => {
       <div className="flex flex-row text-white flex-grow">
         <div
           ref={leftPanelRef}
-          className="shadow-sm border-r border-gray-200/30"
-          style={{ minWidth: `${window.innerWidth * 0.1}px`, width: `${leftPanelWidth}px` }}
+          className="shadow-sm border-r border-gray-200/30 m-0 p-0"
+          style={{ minWidth: `${window.innerWidth * 0.2}px`, width: `${leftPanelWidth}px` }}
         >
-          1
+          <ToolsHub />
         </div>
         <div
           ref={leftDragRef}
@@ -120,7 +121,7 @@ const Core: React.FC = () => {
             <div
               className="shadow-sm border-l border-gray-200/30"
               ref={rightPanelRef}
-              style={{ minWidth: `${window.innerWidth * 0.1}px`, width: `${rightPanelWidth}px` }}
+              style={{ minWidth: `${window.innerWidth * 0.2}px`, width: `${rightPanelWidth}px` }}
             >
               3
             </div>

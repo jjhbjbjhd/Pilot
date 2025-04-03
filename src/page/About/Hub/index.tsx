@@ -1,7 +1,6 @@
 import { Button } from 'antd';
-import githubImage from "@components/github.png"; 
+import githubImage from "@src/icons/github.png"; 
 import { useNavigate } from "react-router-dom";
-
 
 
 const Hub: React.FC = () => {
