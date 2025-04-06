@@ -1,0 +1,10 @@
+.ant-splitter-bar-dragger{
+  background-color: gray !important;
+  width: 1px !important;
+}
+
+.react-grid-placeholder {
+    background-color: blue !important; /* 淡黄色背景 */
+    border: 2px dashed yellow !important;
+  }
+  

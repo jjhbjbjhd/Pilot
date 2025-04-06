@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Loading from "../page/Layout/loading";
+import Loading from "../components/Loading/loading";
 import React from "react";
 
 const Core = lazy(() =>
