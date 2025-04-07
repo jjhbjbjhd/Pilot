@@ -84,7 +84,7 @@ const ToolsHub: React.FC<ToolsHubProps> = ({ onComponentChange }) => {
 
       <div className="flex flex-row w-full h-20 mb-10 justify-center items-center text-white text-2xl font-bold bg-[#2a2a2a] rounded-lg">
         <div>Enjoy You Work </div>
-        🎉🎉
+        🎉
       </div>
 
       <div className="flex-grow w-full overflow-y-auto ">

@@ -83,8 +83,8 @@ const Info: React.FC = () => {
     return (
         <div className="about-info relative" style={{ 
             opacity ,
-            WebkitMaskImage: "linear-gradient(to bottom, rgba(0, 0, 0, 1) 95%, rgba(0, 0, 0, 0) 100%)",
-            maskImage: "linear-gradient(to bottom, rgba(0, 0, 0, 1) 95%, rgba(0, 0, 0, 0) 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, rgba(0, 0, 0, 1) 99%, rgba(0, 0, 0, 0) 100%)",
+            maskImage: "linear-gradient(to bottom, rgba(0, 0, 0, 1) 99%, rgba(0, 0, 0, 0) 100%)",
             }}>
            
             <div id="stars"></div>

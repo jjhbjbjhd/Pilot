@@ -29,7 +29,6 @@ const Feature: React.FC = () => {
           if(featureBoxTopRef.current){
             
             const top = featureBoxTopRef.current.getBoundingClientRect()?.top
-            console.log(top,scrollPosition)
             if(!top) return prev
             if(top < window.innerHeight * 0.6) return -initialTranslateY *0.5
           }
@@ -93,7 +92,7 @@ const Feature: React.FC = () => {
           filter: rotate === 0 ? "drop-shadow(0 0 25px rgba(250, 249, 250, 0.8))" : "none", 
         }}
       >
-        TODOING
+        <img src="/product.png" alt="" />
       </div>
     </div>
   );

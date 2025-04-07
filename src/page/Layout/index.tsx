@@ -1,19 +1,11 @@
 import React, { useState } from "react";
-import consoleComponents from "@src/components/Console";
-import contentComponents from "@src/components/Content";
-import settingComponents from "@src/components/Setting";
-import headerComponents from "@src/components/Header";
+import contentComponents from "@src/components/Dashboard";
 import Toolbar from "@src/components/Toolbar";
-import { BarChart } from 'lucide-react';
 import ToolsHub from "./Tools";
 import "./index.css";
-import { Responsive, WidthProvider } from "react-grid-layout";
-import { Splitter } from "antd";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-import { Divider } from 'antd';
+import { Splitter,Popover } from "antd";
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+
 
 const Core: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState("default");
@@ -22,17 +14,33 @@ const Core: React.FC = () => {
     setSelectedComponent(componentName);
   };
 
-  const layout = [
-    { i: "1", x: 0, y: 0, w: 4, h: 2 },
-    { i: "4", x: 10, y: 0, w: 2, h: 2 },
-    { i: "5", x: 0, y: 2, w: 2, h: 2 },
-    { i: "6", x: 2, y: 2, w: 2, h: 4 },
-    { i: "7", x: 8, y: 2, w: 4, h: 2 },
-    { i: "8", x: 0, y: 4, w: 2, h: 2 },
-    { i: "9", x: 4, y: 4, w: 4, h: 2 },
-    { i: "10", x: 8, y: 4, w: 2, h: 2 },
-    { i: "11", x: 10, y: 4, w: 2, h: 2 },
-  ];
+  const [visible, setVisible] = useState(false);
+  
+  // 管理按钮背景颜色
+  const [active, setActive] = useState<string | null>(null);
+
+  // 示例内容，可以根据每个按钮的需求进行调整
+  const popoverContent = {
+    tool: "This is a tool button",
+    document: "This is a document button",
+    search: "This is a search button",
+    settings: "This is a settings button",
+    ideas: "This is an ideas button"
+  };
+
+  // 处理按钮点击事件
+  const handleClick = (button: string) => {
+    if (active === button) {
+      // 如果点击的是当前按钮，切换Popover的显示状态
+      setVisible(!visible);
+      setActive(null);
+    } else {
+      // 如果点击的是其他按钮，设置为该按钮，并显示Popover
+      setActive(button);
+      setVisible(true);
+
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-black">
@@ -48,9 +56,9 @@ const Core: React.FC = () => {
           <Splitter.Panel>
            
             <div className="relative h-full w-full bg-black px-4 py-2 overflow-y-auto">
-              <div className="flex flex-row w-full text-white items-center justify-start m-4">
+              <div className="flex flex-row w-[95%] text-white items-center justify-start m-4">
                 {/* 左侧图标，居中对齐 */}
-                <div className="text-4xl flex items-center justify-center mr-4">
+                <div className="text-4xl flex items-center justify-center mr-4 flex-shrink-0">
                   📊
                 </div>
 
@@ -78,7 +86,7 @@ const Core: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-row w-full text-white items-center justify-start m-4 space-x-2">
+              <div className="flex flex-row w-[95%] text-white items-center justify-start m-4 space-x-2">
                 <div>🌐<span>Public</span></div>
                 <span>By</span>
                 <img className="w-6 h-6 rounded-full ml-2" src="https://avatars.githubusercontent.com/u/67071682?v=4" alt="" />
@@ -89,36 +97,101 @@ const Core: React.FC = () => {
                 <span>2 stars</span>
               </div>
 
-              <Divider dashed={true} style={{ color: 'white', borderColor: 'white' }}>内容</Divider>
-
-
-              <ResponsiveGridLayout
-                className="layout m-8"
-                layouts={{ lg: layout }}
-                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-                cols={{ lg: 12, md: 10, sm: 6, xs: 4 }}
-                margin={[8, 8]}
-           
-              >
-                {layout.map((item) => (
-                  <div key={item.i} className="bg-gray-100 rounded shadow p-2">
-                    <span>Item {item.i}</span>
-                  </div>
-                ))}
-              </ResponsiveGridLayout>
+              {contentComponents[selectedComponent]}
+              
             </div>
 
             <div className="fixed top-1/2 right-4 transform -translate-y-1/2 z-40 flex flex-col gap-3">
-              <div className="rounded-full p-2 shadow-md hover:bg-gray-600 cursor-pointer">🛠️</div>
-              <div className="rounded-full p-2 shadow-md hover:bg-gray-600 cursor-pointer">📄</div>
-              <div className="rounded-full p-2 shadow-md hover:bg-gray-600 cursor-pointer">🔍</div>
+              <div className="relative">
+                <div
+                  onClick={() => handleClick("tool")}
+                  className={`rounded-full p-2 shadow-md cursor-pointer ${
+                    active === "tool" ? "bg-gray-800" : "hover:bg-gray-800 "
+                  }`}
+                >
+                  🛠️
+                </div>
+
+                {active === "tool" && visible && (
+                  <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
+                    {popoverContent.tool}
+                  </div>
+                )}
+              </div>
+
+              {/* Document Button */}
+              <div className="relative">
+                <div
+                  onClick={() => handleClick("document")}
+                  className={`rounded-full p-2 shadow-md cursor-pointer ${
+                    active === "document" ? "bg-gray-800" : "hover:bg-gray-800 "
+                  }`}
+                >
+                  📄
+                </div>
+
+                {active === "document" && visible && (
+                  <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
+                    {popoverContent.document}
+                  </div>
+                )}
+              </div>
+
+              {/* Search Button */}
+              <div className="relative">
+                <div
+                  onClick={() => handleClick("search")}
+                  className={`rounded-full p-2 shadow-md cursor-pointer ${
+                    active === "search" ? "bg-gray-800" : "hover:bg-gray-800 "
+                  }`}
+                >
+                  🔍
+                </div>
+
+                {active === "search" && visible && (
+                   <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
+                    {popoverContent.search}
+                  </div>
+                )}
+              </div>
+
+              {/* Settings Button */}
+              <div className="relative">
+                <div
+                  onClick={() => handleClick("settings")}
+                  className={`rounded-full p-2 shadow-md cursor-pointer ${
+                    active === "settings" ? "bg-gray-800" : "hover:bg-gray-800 "
+                  }`}
+                >
+                  ⚙️
+                </div>
+
+                {active === "settings" && visible && (
+                   <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
+                    {popoverContent.settings}
+                  </div>
+                )}
+              </div>
+
+              {/* Ideas Button */}
+              <div className="relative">
+                <div
+                  onClick={() => handleClick("ideas")}
+                  className={`rounded-full p-2 shadow-md cursor-pointer ${
+                    active === "ideas" ? "bg-gray-800" : "hover:bg-gray-800 "
+                  }`}
+                >
+                  💡
+                </div>
+
+                {active === "ideas" && visible && (
+                   <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
+                    {popoverContent.ideas}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex gap-4">
-              <div className="rounded-full p-2 shadow-md hover:bg-gray-600 cursor-pointer">⚙️</div>
-              <div className="rounded-full p-2 shadow-md hover:bg-gray-600 cursor-pointer">📊</div>
-              <div className="rounded-full p-2 shadow-md hover:bg-gray-600 cursor-pointer">💡</div>
-            </div>
           </Splitter.Panel>
         </Splitter>
       </div>

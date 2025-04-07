@@ -90,7 +90,7 @@ const Author: React.FC = () => {
         );
       })}
         
-        <div className="fixed bottom-0 left-0 w-full text-center bg-black text-white py-2 text-sm opacity-20 m-1 p-1">
+        <div className="fixed bottom-0 left-0 w-full text-center text-white py-2 text-sm opacity-20 m-1 p-1">
             <span>CopyRight © 2025 Shengwei.Liu. All rights reserved.</span>
         </div>
 

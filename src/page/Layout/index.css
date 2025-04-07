@@ -4,7 +4,8 @@
 }
 
 .react-grid-placeholder {
-    background-color: blue !important; /* 淡黄色背景 */
-    border: 2px dashed yellow !important;
+    background-color: whitesmoke !important; /* 淡黄色背景 */
+    border: 2px dashed blue !important;
+    border-radius: 12px !important;
   }
-  
+
