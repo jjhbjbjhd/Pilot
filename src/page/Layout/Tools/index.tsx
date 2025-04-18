@@ -20,23 +20,25 @@ const toolCategories = [
     icon: <DatabaseOutlined />,
     children: [
       { title: "数据清洗", description: "处理和清理数据集", icon: <ToolOutlined /> ,type:'visualization'},
-      { title: "数据可视化", description: "生成图表和报告", icon: <BarChartOutlined /> ,type:'visualization'},
+      { title: "GPOL分析", description: "GPOL分析工具", icon: <BarChartOutlined /> ,type:'gpol'},
     ],
   },
   {
     title: "测试",
     icon: <BugOutlined />,
     children: [
-      { title: "自动化测试", description: "运行自动化测试脚本", icon: <ToolOutlined />,type:'visualization'},
-      { title: "性能测试", description: "检测系统性能", icon: <BarChartOutlined />,type:'visualization' },
+      // { title: "自动化测试", description: "运行自动化测试脚本", icon: <ToolOutlined />,type:'visualization'},
+      { title: "CameraLink", description: "检测系统性能", icon: <BarChartOutlined />,type:'visualization' },
     ],
   },
+
+  
   {
     title: "汇报",
     icon: <BarChartOutlined />,
     children: [
-      { title: "日报生成", description: "自动生成每日报告", icon: <ToolOutlined /> ,type:'visualization'},
-      { title: "月报管理", description: "创建和管理月报", icon: <BarChartOutlined /> ,type:'visualization'},
+      { title: "数据汇总", description: "自动生成数据报告", icon: <ToolOutlined /> ,type:'dailyTastDataSummary'},
+      // { title: "月报管理", description: "创建和管理月报", icon: <BarChartOutlined /> ,type:'visualization'},
     ],
   },
   {

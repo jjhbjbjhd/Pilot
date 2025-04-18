@@ -6,13 +6,13 @@ import React from "react";
 
 const Core = lazy(() =>
   new Promise<{ default: React.ComponentType<any> }>((resolve) =>
-    setTimeout(() => resolve(import("../page/Layout") as any), 3000)
+    setTimeout(() => resolve(import("../page/Layout") as any), 1000)
   )
 );
 
 const About = lazy(() =>
   new Promise<{ default: React.ComponentType<any> }>((resolve) =>
-    setTimeout(() => resolve(import("../page/About") as any), 3000)
+    setTimeout(() => resolve(import("../page/About") as any), 1000)
   )
 );
 

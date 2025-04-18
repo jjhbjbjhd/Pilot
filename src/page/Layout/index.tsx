@@ -3,7 +3,8 @@ import contentComponents from "@src/components/Dashboard";
 import Toolbar from "@src/components/Toolbar";
 import ToolsHub from "./Tools";
 import "./index.css";
-import { Splitter,Popover } from "antd";
+import { Splitter  } from "antd";
+import { PaperClipIcon } from '@heroicons/react/24/outline';
 
 
 
@@ -109,7 +110,7 @@ const Core: React.FC = () => {
                     active === "tool" ? "bg-gray-800" : "hover:bg-gray-800 "
                   }`}
                 >
-                  🛠️
+                  <PaperClipIcon className="w-4 h-4 text-white" />
                 </div>
 
                 {active === "tool" && visible && (
@@ -127,7 +128,7 @@ const Core: React.FC = () => {
                     active === "document" ? "bg-gray-800" : "hover:bg-gray-800 "
                   }`}
                 >
-                  📄
+                  🗃️
                 </div>
 
                 {active === "document" && visible && (
@@ -145,7 +146,7 @@ const Core: React.FC = () => {
                     active === "search" ? "bg-gray-800" : "hover:bg-gray-800 "
                   }`}
                 >
-                  🔍
+                  ▶️
                 </div>
 
                 {active === "search" && visible && (
@@ -163,7 +164,7 @@ const Core: React.FC = () => {
                     active === "settings" ? "bg-gray-800" : "hover:bg-gray-800 "
                   }`}
                 >
-                  ⚙️
+                  📷
                 </div>
 
                 {active === "settings" && visible && (

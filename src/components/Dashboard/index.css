@@ -7,3 +7,40 @@
   .react-resizable-handle:hover::after {
     opacity: 1;
   }
+
+
+  .spreadsheet-container {
+    width: 98%;
+    height: 95%;
+    background-color: black !important; /* 黑色半透明 */
+    overflow: auto;
+    box-sizing: border-box;
+  }
+
+  .spreadsheet-container td,
+  .spreadsheet-container th {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 0.1px solid gray; /* 只显示横线 */
+    color: gray;
+    background-color: black !important;
+    padding: 6px;
+    font-size: 14px;
+  }
+  
+  /* 行头和列头 */
+  .spreadsheet-container .Spreadsheet__header,
+  .spreadsheet-container .Spreadsheet__row-label {
+    background-color: black !important; /* 行头列头背景黑色 */
+    color: gray;
+    /* font-weight: bold; */
+    border: 0.1px solid gray;
+  }
+  
+  /* 去除默认 outline，提升视觉体验 */
+  .spreadsheet-container .Spreadsheet__cell:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 0.1px gray;
+  }
+  

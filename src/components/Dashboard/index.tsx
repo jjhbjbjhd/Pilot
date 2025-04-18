@@ -1,5 +1,6 @@
-import VContent from "./visualizationContent"
+import VContent from "./dailySummary"
 import Dashboard from "./defaultContent"
+import GPOL from "./gpol"
 
 interface ComponentMap {
     [key: string]: React.ReactNode;
@@ -7,7 +8,8 @@ interface ComponentMap {
 
 const contentComponents: ComponentMap = {
     "default": <Dashboard/>,
-    "visualization": <VContent/>
+    "dailyTastDataSummary": <VContent/>,
+    "gpol": <GPOL/>,
 }
 
 export default contentComponents

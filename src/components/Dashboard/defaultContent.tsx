@@ -6,6 +6,7 @@ import * as d3 from "d3";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import "./index.css"
+import Spreadsheet from "react-spreadsheet";
 
 const HotMap:React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -55,55 +56,35 @@ const HotMap:React.FC = () => {
 }
 
 const TxtTable: React.FC = () => {
+  const columnCount = 10;
+  const rowCount = 10;
 
-  const data = [{
-    "name": "AMC Ambassador Brougham",
-    "economy (mpg)": "13",
-    "year": "73",
-  },
-  {
-    "name": "AMC Ambassador DPL",
-    "economy (mpg)": "15",
-    "year": "70",
-  },
-  {
-    "name": "AMC Ambassador SST",
-    "economy (mpg)": "17",
-    "year": "72",
-  },
-  {
-    "name": "AMC Concord DL 6",
-    "economy (mpg)": "20.2",
-    "year": "79",
-  },
-  {
-    "name": "AMC Concord DL",
-    "economy (mpg)": "18.1",
-    "year": "78",
-    
-  }]
+  const columnLabels = Array.from({ length: columnCount }, (_, i) => `${i + 1}`);
+  const rowLabels = Array.from({ length: rowCount }, (_, i) => `${i + 1}`);
+
+  const data = [
+    [{ value: "Vanilla" }, { value: "Chocolate", readOnly: true }],
+    [{ value: "Strawberry" }, { value: "Cookies", readOnly: true }],
+    [{ value: "Vanilla" }, { value: "Chocolate", readOnly: true }],
+    [{ value: "Strawberry" }, { value: "Cookies", readOnly: true }],
+    [{ value: "Vanilla" }, { value: "Chocolate", readOnly: true }],
+    [{ value: "Strawberry" }, { value: "Cookies", readOnly: true }],
+    [{ value: "Vanilla" }, { value: "Chocolate", readOnly: true }],
+    [{ value: "Strawberry" }, { value: "Cookies", readOnly: true }],
+    [{ value: "Vanilla" }, { value: "Chocolate", readOnly: true }],
+    [{ value: "Strawberry" }, { value: "Cookies", readOnly: true }],
+  ];
 
   return (
-    <table className="w-full text-sm text-center border-separate border-spacing-0 text-gray-400">
-      <thead>
-        <tr>
-          <th className="p-2 border-b border-white/20">Name</th>
-          <th className="p-2 border-b border-white/20">Economy (mpg)</th>
-          <th className="p-2 border-b border-white/20">Year</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((car, index) => (
-          <tr key={index} className="hover:bg-white/5">
-            <td className="p-2 border-b border-white/10">{car["name"]}</td>
-            <td className="p-2 border-b border-white/10">{car["economy (mpg)"]} mpg</td>
-            <td className="p-2 border-b border-white/10">{car["year"]}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="spreadsheet-container m-1">
+      <Spreadsheet
+        data={data}
+        columnLabels={columnLabels}
+        rowLabels={rowLabels}
+      />
+    </div>
   );
-}
+};
 
 const D3Chart: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
