@@ -1,11 +1,16 @@
 import { Responsive, WidthProvider } from "react-grid-layout";
-import React, { useEffect, useRef, useState } from "react";
-
+import React, { useEffect, useRef, useMemo} from "react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import "./index.css"
 import Spreadsheet from "react-spreadsheet";
+import { useWebSocketStore } from "@src/store/websocketStore";
 
+interface ConsoleProps {
+  messages: string[];
+}
+
+const MAX_MESSAGES = 500;
 
 const TxtTable: React.FC = () => {
     const columnCount = 10;
@@ -30,19 +35,41 @@ const TxtTable: React.FC = () => {
   };
 
 
-const Console = () => {
+  const Console: React.FC<ConsoleProps> = ({ messages }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const visibleMessages = useMemo(() => {
+      if (messages.length > MAX_MESSAGES) {
+        return messages.slice(-MAX_MESSAGES);
+      }
+      return messages;
+    }, [messages]);
+
+    useEffect(() => {
+      scrollRef.current?.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }, [visibleMessages]);
+
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto">
-                <div className="p-4">
-                    <div className="text-sm text-gray-500">Console Output</div>
-                    <div className="mt-2 text-sm text-gray-900">
-                        <pre>dddddddd</pre>
-                    </div>
-                </div>
-            </div>
+      <div className="flex flex-col h-full">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto bg-black text-white-400 p-4 text-sm font-mono">
+          <div className=" text-gray-300 px-4 py-2 border-b border-gray-700 text-xs mb-4 justify-center items-center flex gap-1">
+            <div>👨‍💻 作者: shengwei.Liu </div>
+            <div>🏢 公司: 常州爱毕赛思光电技术有限公司</div>
+            <div>📅 版本: v0.1.0</div>
+          </div>
+          {visibleMessages.map((msg, index) => (
+            <div
+            key={index}
+            className="truncate overflow-hidden whitespace-nowrap gap-2"
+          >
+            {msg}
+          </div>
+          ))}
         </div>
-    )
+      </div>
+    );
 }
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -53,17 +80,18 @@ const VContent = () => {
         { i: "console", x: 0, y: 0, w: 8, h: 6, type: "console" },
       ];
     
+    const messages = useWebSocketStore((state) => state.messages);
+
     const renderContent = (type: string) => {
     switch (type) {
         case "console":
-            return <Console />;
+            return <Console messages={messages}/>;
         case "table":
             return  <TxtTable />
         default:
             return <div>Unknown</div>;
     }
     };
-
 
     return (
         <ResponsiveGridLayout
@@ -90,5 +118,18 @@ const VContent = () => {
     );
     
 }
+
+const extractProgress = (msg: string): number | null => {
+  try {
+    const parsed = JSON.parse(msg);
+    if (parsed.progress && typeof parsed.progress === "number") {
+      return parsed.progress;
+    }
+  } catch {
+    const match = msg.match(/(\d{1,3})%/);
+    if (match) return parseInt(match[1]);
+  }
+  return null;
+};
 
 export default VContent

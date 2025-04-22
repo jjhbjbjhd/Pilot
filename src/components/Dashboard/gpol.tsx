@@ -146,7 +146,7 @@ const Image: React.FC = () => {
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const GPOL = () => {
+const GPOL = React.memo(() => {
     const layout = [
         { i: "upDown", x: 0, y: 0, w: 3, h: 6, type: "line" },
         { i: "upDownImage", x: 5, y: 0, w: 3, h: 6, type: "image" },
@@ -193,6 +193,6 @@ const GPOL = () => {
         </ResponsiveGridLayout>
     );
     
-}
+});
 
 export default GPOL

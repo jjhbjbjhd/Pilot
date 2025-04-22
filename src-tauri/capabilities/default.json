@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "opener:default",
@@ -12,6 +14,9 @@
     "core:window:allow-close",
     "core:window:allow-minimize",
     "core:window:allow-maximize",
-    "core:window:allow-toggle-maximize"
+    "core:window:allow-toggle-maximize",
+    "websocket:default",
+    "upload:default",
+    "dialog:default"
   ]
 }

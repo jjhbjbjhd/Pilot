@@ -5,7 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 const Hub: React.FC = () => {
     const navigate = useNavigate();
-    const hubArray = ["CameraLink","生产汇总","GpoL分类","性能分析","图像增强","光谱计算"]
+    const hubArray = [
+    { title: "CameraLink", image: "/f1.webp" },
+    { title: "生产汇总", image: "/f2.webp" },
+    { title: "GpoL分类", image: "/f3.webp" },
+    { title: "性能分析", image: "/f4.webp" },
+    { title: "图像增强", image: "/f5.webp" },
+    { title: "光谱计算", image: "/f8.webp" },
+    ];
   return(
     <div className='min-h-screen'>
         <div className="flex flex-row   gap-4 font-bold text-base text-white transition-opacity duration-700 relative justify-center p-10">
@@ -13,7 +20,7 @@ const Hub: React.FC = () => {
                 <span className='inline-block '>解放个体潜能：<span className='text-cyan-500'>从工具到</span></span>
                 <span className='inline-block text-cyan-500'>伙伴</span>
                 <div  className="flex flex-row gap-8">
-                    <Button size='large'>
+                    <Button size='large' onClick={() => navigate(`/core`)}>
                         开始使用
                     </Button>
                     <Button size='large' style={{backgroundColor: '#000000', color: '#ffffff',border: '0.5px solid gray'}}>
@@ -29,7 +36,7 @@ const Hub: React.FC = () => {
                 <span className='inline-block'>时代中脱颖而出。这将在 ToolHub 中成为现实。</span>
 
                 <div className="flex flex-row gap-8 mr-20">
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2" >
                         <span className='text-2xl item-center justify-center text-center text-cyan-500'>Free</span>
                         <span>开始使用</span>
                     </div>
@@ -43,14 +50,14 @@ const Hub: React.FC = () => {
         </div>
         <div className="flex flex-row gap-4 font-bold text-base text-white transition-opacity duration-700 relative justify-center p-10">
             <div className="grid grid-cols-3 grid-rows-2 gap-6">
-                {hubArray.map((item, index) => (
+            {hubArray.map((item, index) => (
                 <div 
-                    onClick={() => navigate(`/core`)}
+                    // onClick={() => navigate(`/core`)}
                     key={index} 
-                    className="bg-gray-800 w-[calc(80vw/3)] h-[calc(80vw/3*0.75)] flex items-center justify-center rounded-xl shadow-lg border border-gray-600 
+                    className="bg-gray-800 w-[calc(80vw/3)] h-[calc(80vw/3*0.75)] flex flex-col items-center justify-center rounded-xl shadow-lg border border-gray-600 
                     transition-transform duration-300 ease-out hover:scale-105 hover:-translate-y-2 hover:shadow-[0_0_15px_cyan]"
                 >
-                    {item}
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                 </div>
                 ))}
             </div>

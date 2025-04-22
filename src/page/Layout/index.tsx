@@ -4,7 +4,10 @@ import Toolbar from "@src/components/Toolbar";
 import ToolsHub from "./Tools";
 import "./index.css";
 import { Splitter  } from "antd";
-import { PaperClipIcon } from '@heroicons/react/24/outline';
+import DocumentPopover from "@src/components/Popover/document";
+// import useWebSocket from "@src/hook/ws";
+import { message } from "antd";
+import { useWebSocketStore } from "@src/store/websocketStore";
 
 
 
@@ -20,15 +23,6 @@ const Core: React.FC = () => {
   // 管理按钮背景颜色
   const [active, setActive] = useState<string | null>(null);
 
-  // 示例内容，可以根据每个按钮的需求进行调整
-  const popoverContent = {
-    tool: "This is a tool button",
-    document: "This is a document button",
-    search: "This is a search button",
-    settings: "This is a settings button",
-    ideas: "This is an ideas button"
-  };
-
   // 处理按钮点击事件
   const handleClick = (button: string) => {
     if (active === button) {
@@ -41,6 +35,42 @@ const Core: React.FC = () => {
       setVisible(true);
 
     }
+  };
+
+  const { sendMessage, isConnected } = useWebSocketStore((state) => state);
+
+  const runTask = () => {
+    if (selectedComponent === "default") {
+      message.warning("请选择工具");
+    } else if (selectedComponent === "dailyTastDataSummary") {
+      // 如果选中了 summary 组件
+      const popoverData = getPopoverData(); // 假设这个函数可以获取 Popover 中的数据
+      if (popoverData) {
+        // 将数据通过 WebSocket 发送到后端
+        if (isConnected) {
+          sendMessage({type:"task",payload:{job:popoverData}} );
+          message.success("任务已启动！");
+        }
+        
+      } else {
+        message.error("没有选择有效的数据进行任务启动");
+      }
+    } else {
+      message.warning("请选择合适的工具");
+    }
+  };
+
+  const getPopoverData = () => {
+    const savedFolders = localStorage.getItem("savedFolders");
+    const showTimeFilter = localStorage.getItem("showTimeFilter");
+    const showFolderFilter = localStorage.getItem("timeFilterRange");
+    
+    return {
+      folder_path: savedFolders,
+      filter: showTimeFilter,
+      time_filter_range: showFolderFilter
+    }
+
   };
 
   return (
@@ -103,22 +133,6 @@ const Core: React.FC = () => {
             </div>
 
             <div className="fixed top-1/2 right-4 transform -translate-y-1/2 z-40 flex flex-col gap-3">
-              <div className="relative">
-                <div
-                  onClick={() => handleClick("tool")}
-                  className={`rounded-full p-2 shadow-md cursor-pointer ${
-                    active === "tool" ? "bg-gray-800" : "hover:bg-gray-800 "
-                  }`}
-                >
-                  <PaperClipIcon className="w-4 h-4 text-white" />
-                </div>
-
-                {active === "tool" && visible && (
-                  <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
-                    {popoverContent.tool}
-                  </div>
-                )}
-              </div>
 
               {/* Document Button */}
               <div className="relative">
@@ -132,8 +146,8 @@ const Core: React.FC = () => {
                 </div>
 
                 {active === "document" && visible && (
-                  <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
-                    {popoverContent.document}
+                  <div className="absolute right-full top-1/2 -translate-y-1/4 mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
+                    <DocumentPopover />
                   </div>
                 )}
               </div>
@@ -141,7 +155,7 @@ const Core: React.FC = () => {
               {/* Search Button */}
               <div className="relative">
                 <div
-                  onClick={() => handleClick("search")}
+                  onClick={runTask}
                   className={`rounded-full p-2 shadow-md cursor-pointer ${
                     active === "search" ? "bg-gray-800" : "hover:bg-gray-800 "
                   }`}
@@ -151,7 +165,6 @@ const Core: React.FC = () => {
 
                 {active === "search" && visible && (
                    <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
-                    {popoverContent.search}
                   </div>
                 )}
               </div>
@@ -169,7 +182,6 @@ const Core: React.FC = () => {
 
                 {active === "settings" && visible && (
                    <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
-                    {popoverContent.settings}
                   </div>
                 )}
               </div>
@@ -187,7 +199,6 @@ const Core: React.FC = () => {
 
                 {active === "ideas" && visible && (
                    <div className="absolute right-full mr-2 p-2 bg-gray-800 text-white rounded-md shadow-lg">
-                    {popoverContent.ideas}
                   </div>
                 )}
               </div>
