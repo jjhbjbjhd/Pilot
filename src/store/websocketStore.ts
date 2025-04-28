@@ -43,6 +43,9 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
             if (parsed?.msg === "pong") {
               return; 
             }
+            set((state) => ({
+              messages: [...state.messages, event.data].slice(-500),
+          }));
         } catch (error) {
             set((state) => ({
                 messages: [...state.messages, event.data].slice(-500),

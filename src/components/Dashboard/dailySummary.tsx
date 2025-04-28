@@ -3,36 +3,107 @@ import React, { useEffect, useRef, useMemo} from "react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import "./index.css"
-import Spreadsheet from "react-spreadsheet";
 import { useWebSocketStore } from "@src/store/websocketStore";
+import { DataGrid } from '@mui/x-data-grid';
+import { Box } from '@mui/material';
 
 interface ConsoleProps {
   messages: string[];
 }
 
+interface TableProps {
+  data: string;
+}
+
 const MAX_MESSAGES = 500;
 
-const TxtTable: React.FC = () => {
-    const columnCount = 10;
-  
-    const columnLabels = Array.from({ length: columnCount }, (_, i) => `${i + 1}`);
-    const rowLabels = ["项目名","GPOL","VDDA","VDDAO","VDD","VR","VDDL","SUBPV","VCOM","积分时间",
-        "平均响应时间","响应率不均匀性","平均噪声电压","平均信号电压","平均响应率","固定图像噪声",
-        "NETD","电平坏点","响应率坏点","NETD坏点","噪声坏点","无效像元数","无效像元率","平均探测率",
-        "全区域盲元簇","低温电平","高温电平"
-    ];
-  
-  
-    return (
-      <div className="spreadsheet-container ml-6">
-        <Spreadsheet
-          data={[]}
-          columnLabels={columnLabels}
-          rowLabels={rowLabels}
-        />
-      </div>
-    );
-  };
+const TxtTable: React.FC<TableProps> = ({ data }) => {
+  console.log("渲染啦！！！！！！！！！")
+  if (!data) return null;
+
+  const parsed = JSON.parse(data);
+  const rowsData = parsed.data || [];
+
+  const rows = rowsData.map((item: any, index: number) => ({
+    id: index,
+    ...item,
+    lowImage: item.image?.[1] || '',
+    highImage: item.image?.[2] || ''
+  }));
+
+  const columns = [
+    { field: 'project_name', headerName: '项目名', width: 100 },
+    { field: 's_time', headerName: '积分时间', width: 100 },
+    { field: 'resp_avg', headerName: '平均响应时间', width: 150 },
+    { field: 'resp_rate_precent', headerName: '响应率不均匀性', width: 160 },
+    { field: 'noise_avg', headerName: '平均噪声电压', width: 140 },
+    { field: 'sign_avg', headerName: '平均信号电压', width: 140 },
+    { field: 'resp_rate_avg', headerName: '平均响应率', width: 140 },
+    { field: 'fixed_noise', headerName: '固定图像噪声', width: 140 },
+    { field: 'netd', headerName: 'NETD', width: 100 },
+    { field: 'bad_pixes', headerName: '电平坏点', width: 100 },
+    { field: 'bad_pixes_resp_rate', headerName: '响应率坏点', width: 120 },
+    { field: 'bad_pixes_netd', headerName: 'NETD坏点', width: 100 },
+    { field: 'bad_pixes_noise', headerName: '噪声坏点', width: 100 },
+    { field: 'bad_pixes_number', headerName: '无效像元数', width: 120 },
+    { field: 'bad_pixes_rate', headerName: '无效像元率', width: 120 },
+    { field: 'detect_rate_avg', headerName: '平均探测率', width: 120 },
+    {field:'p_1',headerName:"PXIe4144",width:120},
+    { field: 'p_2', headerName: 'PXIe4141', width: 120 },
+    { field: 'blind', headerName: '盲元簇信息', width: 120 },
+    {
+      field: 'lowImage',
+      headerName: '低温电平图',
+      width: 100,
+      
+      renderCell: (params:any) =>
+        params.value ? (
+          <img src={params.value} alt="Low" style={{ width: 50, height: 50 }} />
+        ) : (
+          '无图'
+        ),
+    },
+    {
+      field: 'highImage',
+      headerName: '高温电平图',
+      width: 100,
+      renderCell: (params:any) =>
+        params.value ? (
+          <img src={params.value} alt="High" style={{ width: 50, height: 50 }} />
+        ) : (
+          '无图'
+        ),
+    },
+  ];
+
+  return (
+  <Box sx={{ height: "95%", width: '100%' }}>
+    <DataGrid
+      rows={rows}
+      columns={columns}
+      disableRowSelectionOnClick
+      hideFooter // 去掉分页
+      checkboxSelection 
+      sx={{
+        '& .MuiDataGrid-cell': {
+          userSelect: 'text', // 允许用户选中单元格文字
+        },
+        '& .MuiDataGrid-columnHeaderTitle': {
+          userSelect: 'text', // 允许用户选中表头文字
+        },
+      }}
+    />
+  </Box>
+
+  );
+};
+
+const MemoizedTxtTable = React.memo(({ data }: { data: any }) => {
+  return <TxtTable data={data} />;
+}, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data);
+});
+
 
 
   const Console: React.FC<ConsoleProps> = ({ messages }) => {
@@ -76,18 +147,42 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const VContent = () => {
     const layout = [
-        { i: "table", x: 0, y: 0, w: 8, h: 6, type: "table" },
-        { i: "console", x: 0, y: 0, w: 8, h: 6, type: "console" },
+        { i: "table", x: 0, y: 0, w: 3.5, h: 8.5, type: "table" },
+        { i: "console", x: 4, y: 0, w: 2.5, h: 8.5, type: "console" },
       ];
     
     const messages = useWebSocketStore((state) => state.messages);
+    const dataList = messages.filter((value) => {
+      if (typeof value === 'object' && value !== null) return true;
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          return typeof parsed === 'object' && parsed !== null;
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    });
+    
+    const info = messages.filter((value) => {
+      if (typeof value !== 'string') return false;
+      try {
+        JSON.parse(value);
+        return false; 
+      } catch {
+        return true; 
+      }
+    });
+
+    const data = dataList[dataList.length - 1];
 
     const renderContent = (type: string) => {
     switch (type) {
         case "console":
-            return <Console messages={messages}/>;
+            return <Console messages={info}/>;
         case "table":
-            return  <TxtTable />
+            return <MemoizedTxtTable data={data} />;
         default:
             return <div>Unknown</div>;
     }
@@ -118,18 +213,5 @@ const VContent = () => {
     );
     
 }
-
-const extractProgress = (msg: string): number | null => {
-  try {
-    const parsed = JSON.parse(msg);
-    if (parsed.progress && typeof parsed.progress === "number") {
-      return parsed.progress;
-    }
-  } catch {
-    const match = msg.match(/(\d{1,3})%/);
-    if (match) return parseInt(match[1]);
-  }
-  return null;
-};
 
 export default VContent

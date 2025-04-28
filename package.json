@@ -11,7 +11,11 @@
     "lint": "eslint 'src/**/*.{ts,tsx}' --fix"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@heroicons/react": "^2.2.0",
+    "@mui/material": "^7.0.2",
+    "@mui/x-data-grid": "^8.0.0",
     "@observablehq/plot": "^0.6.17",
     "@tailwindcss/postcss": "^4.0.17",
     "@tailwindcss/vite": "^4.0.0",
@@ -26,7 +30,7 @@
     "framer-motion": "^12.6.2",
     "gridstack": "^11.5.1",
     "lucide-react": "^0.487.0",
-    "luckysheet": "^2.1.13",
+    "luckysheet": "^2.1.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-draggable": "^4.4.6",

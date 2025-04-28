@@ -55,7 +55,9 @@ const Hub: React.FC = () => {
                     // onClick={() => navigate(`/core`)}
                     key={index} 
                     className="bg-gray-800 w-[calc(80vw/3)] h-[calc(80vw/3*0.75)] flex flex-col items-center justify-center rounded-xl shadow-lg border border-gray-600 
-                    transition-transform duration-300 ease-out hover:scale-105 hover:-translate-y-2 hover:shadow-[0_0_15px_cyan]"
+                    transition-transform duration-300 ease-out hover:scale-1
+                    
+                    05 hover:-translate-y-2 hover:shadow-[0_0_15px_cyan]"
                 >
                     <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                 </div>

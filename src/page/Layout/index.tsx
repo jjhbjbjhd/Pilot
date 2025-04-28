@@ -5,10 +5,11 @@ import ToolsHub from "./Tools";
 import "./index.css";
 import { Splitter  } from "antd";
 import DocumentPopover from "@src/components/Popover/document";
-// import useWebSocket from "@src/hook/ws";
 import { message } from "antd";
 import { useWebSocketStore } from "@src/store/websocketStore";
-
+import { invoke } from "@tauri-apps/api/core";
+import { useGpolStore } from "@src/store/gpolStore";
+// import { decode as b64decode } from 'base64-arraybuffer';
 
 
 const Core: React.FC = () => {
@@ -36,15 +37,17 @@ const Core: React.FC = () => {
 
     }
   };
+  const { setGpolData } = useGpolStore();
 
   const { sendMessage, isConnected } = useWebSocketStore((state) => state);
 
-  const runTask = () => {
+  const runTask = async () => {
+    const popoverData = getPopoverData(); // 假设这个函数可以获取 Popover 中的数据
     if (selectedComponent === "default") {
       message.warning("请选择工具");
     } else if (selectedComponent === "dailyTastDataSummary") {
       // 如果选中了 summary 组件
-      const popoverData = getPopoverData(); // 假设这个函数可以获取 Popover 中的数据
+  
       if (popoverData) {
         // 将数据通过 WebSocket 发送到后端
         if (isConnected) {
@@ -55,6 +58,25 @@ const Core: React.FC = () => {
       } else {
         message.error("没有选择有效的数据进行任务启动");
       }
+    }else if(selectedComponent === 'gpol'){
+        try {
+          const raw = popoverData.folder_path;
+          const folder_path = raw ? JSON.parse(raw) : [];
+          const path_list = folder_path.flatMap((item: any) =>
+            !item.disabled ? [item.path] : []
+          );
+          
+
+          if (path_list.length===0){
+            return message.info("请选择一个带有gpol数据的文件夹");
+          }
+  
+
+          const gpol_analysis_data = await invoke("run_gpol", {pathList:path_list} );
+          setGpolData(gpol_analysis_data);
+        } catch (err) {
+          message.info("请选择一个带有gpol数据的文件夹");
+        }
     } else {
       message.warning("请选择合适的工具");
     }

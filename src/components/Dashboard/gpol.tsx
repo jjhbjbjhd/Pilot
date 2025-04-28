@@ -1,168 +1,239 @@
 import { Responsive, WidthProvider } from "react-grid-layout";
 import React, { useEffect, useRef, useState } from "react";
+import { Button, Dropdown, Menu } from 'antd';
+import { useGpolStore } from "@src/store/gpolStore";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import "./index.css"
 import * as Plot from "@observablehq/plot";
 import * as d3 from "d3";
+import { Empty } from 'antd';
 
-const Line: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [brands, setBrands] = useState<any[]>([]);
-  const [size, setSize] = useState({ width: 0, height: 0 });
+import {
+  ZoomInOutlined,
+  RedoOutlined,
+  EditOutlined,
+  DownOutlined,
+} from '@ant-design/icons';
 
-  useEffect(() => {
-    d3.csv("/brands-2018.csv", d3.autoType).then((data) => {
-      setBrands(data);
-    });
-  }, []);
-
-  // 👀 监听容器尺寸
-  useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const { width, height } = entry.contentRect;
-        setSize({ width, height });
-      }
-    });
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      setSize({ width, height });
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  // 📊 绘制图表
-  useEffect(() => {
-    if (!size.width || !size.height || !containerRef.current || brands.length === 0) return;
-
-    const chart =Plot.plot({
-      marginLeft: 90,
-      x: { axis: null },
-      y: { label: null },
-      marks: [
-        Plot.barX(brands, {
-          x: "value",
-          y: "name",
-          sort: { y: "x", reverse: true, limit: 10 }
-        }),
-    
-        Plot.text(brands, {
-          text: d => `${Math.floor(d.value / 1000)} B`,
-          y: "name",
-          x: "value",
-          textAnchor: "end",
-          dx: -3,
-          fill: "white"
-        })
-      ]
-    });
-
-    containerRef.current.innerHTML = "";
-    containerRef.current.append(chart);
-  }, [size, brands]);
-
-  return <div ref={containerRef} className="w-full h-full" />;
-
-  
+interface GpolProps {
+  data: any;
 }
 
-const Image: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [issues, setIssues] = useState<any[]>([]);
-  const [size, setSize] = useState({ width: 0, height: 0 });
+const Gpol: React.FC<GpolProps> = ({data}) => {
+  const menu = (
+    <Menu
+      items={[
+        { label: '类型1', key: '1' },
+        { label: '类型2', key: '2' },
+        { label: '类型3', key: '3' },
+      ]}
+    />
+  );
+
+  const darkButtonClass = 'bg-gray-800 text-white border-none hover:bg-gray-800';
+
+  return (
+    <div className="h-[85%]">
+      <div className="flex flex-row h-full gap-5">
+        <Line />
+        <Image data={data}/>
+      </div>
+
+      <div className="flex flex-row gap-4 p-2 justify-between">
+        {/* 左侧的按钮 */}
+        <div className="flex flex-row gap-4 p-2 items-center justify-start">
+          <Button icon={<EditOutlined />} className={darkButtonClass} />
+          <Dropdown overlay={menu}>
+            <Button icon={<DownOutlined />} className={darkButtonClass}>样本类型</Button>
+          </Dropdown>
+        </div>
+
+        {/* 右侧的按钮 */}
+        <div className="flex flex-row gap-4 p-2 items-center justify-end">
+          <Button icon={<ZoomInOutlined />} className={darkButtonClass} />
+          <Button icon={<RedoOutlined />} className={darkButtonClass} />
+        </div>
+      </div>
+    </div>
+
+  )
+}
+
+const Line: React.FC = () => {
+  return <div className="w-full h-full" />;
+}
+
+
+const Image: React.FC<GpolProps> = ({ data }) => {
+  const plotRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [plotSize, setPlotSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    d3.text("/framework-issues.json").then((text) => {
-      const data = JSON.parse(text, (key, value) =>
-        /_at$/.test(key) && value ? new Date(value) : value
-      );
-      setIssues(data);
+    if (!data || !data.vs || !plotRef.current) return;
+
+    const width = data.vs[0].length;
+    const height = data.vs.length;
+    const pixels = data.vs.flat();
+
+    const plot = Plot.plot({
+      margin: 4,
+      axis: null,
+      aspectRatio: 1,
+      color: {
+        scheme: "greys",
+        domain: d3.extent(pixels),
+      },
+      marks: [Plot.raster(pixels, { width, height })],
     });
-  }, []);
 
-  // 👀 监听容器尺寸
+    plotRef.current.innerHTML = '';
+    plotRef.current.appendChild(plot);
+    const initialWidth = plotRef.current.offsetWidth;
+    const initialHeight = plotRef.current.offsetHeight;
+    setPlotSize({ width: initialWidth, height: initialHeight });
+
+  }, [data]);
+
+  // ResizeObserver 用于在容器大小变化时更新 plotSize
   useEffect(() => {
+    if (!plotRef.current) return;
+
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const { width, height } = entry.contentRect;
-        setSize({ width, height });
+        setPlotSize({
+          width,
+          height
+        });
       }
     });
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      setSize({ width, height });
-    }
+    observer.observe(plotRef.current);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
-  // 📊 绘制图表
   useEffect(() => {
-    if (!size.width || !size.height || !containerRef.current || issues.length === 0) return;
+    const svg = svgRef.current;
+    if (!svg) return;
 
-    const chart = Plot.plot({
-      width: size.width,
-      height: size.height,
-      color: {legend: true},
-      marks: [
-        Plot.areaY(
-          issues.flatMap((i) =>
-            d3
-              .utcDays(i.created_at, i.closed_at ?? new Date())
-              .map((at) => ({ created_at: i.created_at, at }))
-          ),
-          Plot.binX(
-            
-            { y: "count", filter: null },
-            {
-              x: "at",
-              fill: (d : any) => d3.utcWeek(d.created_at) as any,
-              reverse: true,
-              curve: "step",
-              tip: { format: { x: null, z: null } },
-              interval: "day"
-            } as any
-          ),
-        )
-      ]
-    });
+    let startX = 0;
+    let startY = 0;
+    let rect: SVGRectElement | null = null;
 
-    containerRef.current.innerHTML = "";
-    containerRef.current.append(chart);
-  }, [size, issues]);
+    const onMouseDown = (e: MouseEvent) => {
+      if (!svgRef.current) return;
+      const bounds = svgRef.current.getBoundingClientRect();
+      startX = e.clientX - bounds.left;
+      startY = e.clientY - bounds.top;
 
-  return <div ref={containerRef} className="w-full h-[88%]" />;
+      // ⚠️ 删除上一个虚线框
+      const old = svgRef.current.querySelector('rect');
+      if (old) svgRef.current.removeChild(old);
+
+      // 新建虚线框
+      rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", String(startX));
+      rect.setAttribute("y", String(startY));
+      rect.setAttribute("width", "0");
+      rect.setAttribute("height", "0");
+      rect.setAttribute("stroke", "red");
+      rect.setAttribute("stroke-dasharray", "4");
+      rect.setAttribute("fill", "none");
+      svgRef.current.appendChild(rect);
+
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!rect || !svgRef.current) return;
+      const bounds = svgRef.current.getBoundingClientRect();
+      const currX = e.clientX - bounds.left;
+      const currY = e.clientY - bounds.top;
+
+      const x = Math.min(currX, startX);
+      const y = Math.min(currY, startY);
+      const width = Math.abs(currX - startX);
+      const height = Math.abs(currY - startY);
+
+      rect.setAttribute("x", String(x));
+      rect.setAttribute("y", String(y));
+      rect.setAttribute("width", String(width));
+      rect.setAttribute("height", String(height));
+    };
+
+    const onMouseUp = () => {
+      if (rect && data && data.vs) {
+        const x0 = Math.round(parseFloat(rect.getAttribute("x")!));
+        const y0 = Math.round(parseFloat(rect.getAttribute("y")!));
+        const width = Math.round(parseFloat(rect.getAttribute("width")!));
+        const height = Math.round(parseFloat(rect.getAttribute("height")!));
+        const x1 = x0 + width;
+        const y1 = y0 + height;
+
+        // 👉 映射到数据索引
+        const rowStart = Math.floor(y0 / plotSize.height * data.vs.length);
+        const rowEnd = Math.floor(y1 / plotSize.height * data.vs.length);
+        const colStart = Math.floor(x0 / plotSize.width * data.vs[0].length);
+        const colEnd = Math.floor(x1 / plotSize.width * data.vs[0].length);
+
+        console.log("选中的数据索引：", { rowStart, rowEnd, colStart, colEnd });
+      }
+
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    svg.addEventListener("mousedown", onMouseDown);
+    return () => {
+      svg.removeEventListener("mousedown", onMouseDown);
+    };
+  }, [plotSize]);
+
+  if (!data || !data.vs) {
+    return (
+      <div className="w-full h-[98%] flex items-center justify-center bg-black">
+        <Empty description={<span style={{ color: 'white' }}>暂无数据</span>} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-[98%] flex items-center justify-center overflow-auto">
+      <div className="relative">
+        <div ref={plotRef} />
+        <svg
+          ref={svgRef}
+          className="absolute inset-0 z-10 pointer-events-auto"
+          width={plotSize.width}
+          height={plotSize.height}
+        />
+      </div>
+    </div>
+  );
 };
-
-
 
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const GPOL = React.memo(() => {
-    const layout = [
-        { i: "upDown", x: 0, y: 0, w: 3, h: 6, type: "line" },
-        { i: "upDownImage", x: 5, y: 0, w: 3, h: 6, type: "image" },
-        { i: "scope", x: 0, y:8, w: 3, h: 6, type: "line" },
-        { i: "scopeImage", x: 5, y: 8, w: 3, h: 6, type: "image" },
-        { i: "couple", x: 0, y:8, w: 3, h: 6, type: "line" },
-        { i: "coupleImage", x: 5, y: 8, w: 3, h: 6, type: "image" },
 
+    const layout = [
+        { i: "down", x: 0, y: 0, w: 8, h: 8, type: "gpol" },
       ];
+    
+    const { gpolData } = useGpolStore();
     
     const renderContent = (type: string) => {
     switch (type) {
-        case "line":
-            return <Line />;
-        case "image":
-            return  <Image />
+        case "gpol":
+            return  <Gpol data={gpolData}/>
         default:
             return <div>Unknown</div>;
     }

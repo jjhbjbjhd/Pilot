@@ -138,9 +138,9 @@ const DocumentPopover: React.FC = () => {
           <List.Item
             className="rounded-md px-3 py-2 mb-2 hover:bg-gray-800"
             actions={[
-              <Tooltip title={folder.disabled ? "启用" : "禁用"} key="toggle">
+              <Tooltip title={folder.disabled ?  "禁用":"启用" } key="toggle">
                 <Switch
-                  checked={!folder.disabled}
+                  checked={folder.disabled}
                   onChange={() => toggleDisable(folder.path)}
                   size="small"
                 />
