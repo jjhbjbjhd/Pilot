@@ -1,60 +1,23 @@
 import { Responsive, WidthProvider } from "react-grid-layout";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Dropdown, Menu } from 'antd';
 import { useGpolStore } from "@src/store/gpolStore";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import "./index.css"
-import * as Plot from "@observablehq/plot";
-import * as d3 from "d3";
 import { Empty } from 'antd';
 
-import {
-  ZoomInOutlined,
-  RedoOutlined,
-  EditOutlined,
-  DownOutlined,
-} from '@ant-design/icons';
 
 interface GpolProps {
   data: any;
 }
 
 const Gpol: React.FC<GpolProps> = ({data}) => {
-  const menu = (
-    <Menu
-      items={[
-        { label: '类型1', key: '1' },
-        { label: '类型2', key: '2' },
-        { label: '类型3', key: '3' },
-      ]}
-    />
-  );
-
-  const darkButtonClass = 'bg-gray-800 text-white border-none hover:bg-gray-800';
-
   return (
-    <div className="h-[85%]">
-      <div className="flex flex-row h-full gap-5">
+    <div className="w-full h-[95%]">
+      <div className="flex flex-row h-full w-full gap-5">
         <Line />
         <Image data={data}/>
-      </div>
-
-      <div className="flex flex-row gap-4 p-2 justify-between">
-        {/* 左侧的按钮 */}
-        <div className="flex flex-row gap-4 p-2 items-center justify-start">
-          <Button icon={<EditOutlined />} className={darkButtonClass} />
-          <Dropdown overlay={menu}>
-            <Button icon={<DownOutlined />} className={darkButtonClass}>样本类型</Button>
-          </Dropdown>
-        </div>
-
-        {/* 右侧的按钮 */}
-        <div className="flex flex-row gap-4 p-2 items-center justify-end">
-          <Button icon={<ZoomInOutlined />} className={darkButtonClass} />
-          <Button icon={<RedoOutlined />} className={darkButtonClass} />
-        </div>
       </div>
     </div>
 
@@ -65,160 +28,176 @@ const Line: React.FC = () => {
   return <div className="w-full h-full" />;
 }
 
-
 const Image: React.FC<GpolProps> = ({ data }) => {
-  const plotRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imgWrapperRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [plotSize, setPlotSize] = useState({ width: 0, height: 0 });
+
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [mode, setMode] = useState<'move' | 'select'>('move');
+
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+
+  const [selectionRect, setSelectionRect] = useState<null | {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }>(null);
+
+  const selectionStart = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
-    if (!data || !data.vs || !plotRef.current) return;
+    if (data && containerRef.current) {
+      const handleWheel = (e: WheelEvent) => {
+        e.preventDefault();
+        const delta = -e.deltaY;
 
-    const width = data.vs[0].length;
-    const height = data.vs.length;
-    const pixels = data.vs.flat();
+        setScale(prev => {
+          const newScale = prev + (delta > 0 ? 0.1 : -0.1);
+          return Math.max(1, parseFloat(newScale.toFixed(2)));
+        });
+      };
 
-    const plot = Plot.plot({
-      margin: 4,
-      axis: null,
-      aspectRatio: 1,
-      color: {
-        scheme: "greys",
-        domain: d3.extent(pixels),
-      },
-      marks: [Plot.raster(pixels, { width, height })],
-    });
+      const container = containerRef.current;
+      container.addEventListener('wheel', handleWheel, { passive: false });
 
-    plotRef.current.innerHTML = '';
-    plotRef.current.appendChild(plot);
-    const initialWidth = plotRef.current.offsetWidth;
-    const initialHeight = plotRef.current.offsetHeight;
-    setPlotSize({ width: initialWidth, height: initialHeight });
-
+      return () => {
+        container.removeEventListener('wheel', handleWheel);
+      };
+    }
   }, [data]);
 
-  // ResizeObserver 用于在容器大小变化时更新 plotSize
-  useEffect(() => {
-    if (!plotRef.current) return;
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (mode === 'move') {
+      isDragging.current = true;
+      dragStart.current = { x: e.clientX, y: e.clientY };
+    } else if (mode === 'select' && svgRef.current) {
+      const rect = svgRef.current.getBoundingClientRect();
+      const startX = (e.clientX - rect.left ) / scale ;
+      const startY = (e.clientY - rect.top ) / scale ;
+      selectionStart.current = { x: startX, y: startY };
+      setSelectionRect(null);
+    }
+  };
 
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const { width, height } = entry.contentRect;
-        setPlotSize({
-          width,
-          height
-        });
-      }
-    });
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (mode === 'move' && isDragging.current) {
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+      setOffset(prev => ({
+        x: prev.x + dx,
+        y: prev.y + dy,
+      }));
+      dragStart.current = { x: e.clientX, y: e.clientY };
+    } else if (mode === 'select' && selectionStart.current && svgRef.current) {
+      const rect = svgRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / scale ;
+      const y = (e.clientY - rect.top) / scale;
+      const sx = selectionStart.current.x;
+      const sy = selectionStart.current.y;
 
-    observer.observe(plotRef.current);
+      setSelectionRect({
+        x: Math.min(sx, x),
+        y: Math.min(sy, y),
+        width: Math.abs(x - sx),
+        height: Math.abs(y - sy),
+      });
+    }
+  };
 
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  const handleMouseUp = (e: React.MouseEvent) => {
+    isDragging.current = false;
+    selectionStart.current = null;
 
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
+    if (mode === 'select' && selectionRect && imgRef.current) {
+  
 
-    let startX = 0;
-    let startY = 0;
-    let rect: SVGRectElement | null = null;
+    }
+  };
 
-    const onMouseDown = (e: MouseEvent) => {
-      if (!svgRef.current) return;
-      const bounds = svgRef.current.getBoundingClientRect();
-      startX = e.clientX - bounds.left;
-      startY = e.clientY - bounds.top;
+  const handleDoubleClick = () => {
+    setScale(1);
+    setOffset({ x: 0, y: 0 });
+  };
 
-      // ⚠️ 删除上一个虚线框
-      const old = svgRef.current.querySelector('rect');
-      if (old) svgRef.current.removeChild(old);
+  const toggleMode = () => {
+    setMode(prev => (prev === 'move' ? 'select' : 'move'));
+    setSelectionRect(null);
+  };
 
-      // 新建虚线框
-      rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", String(startX));
-      rect.setAttribute("y", String(startY));
-      rect.setAttribute("width", "0");
-      rect.setAttribute("height", "0");
-      rect.setAttribute("stroke", "red");
-      rect.setAttribute("stroke-dasharray", "4");
-      rect.setAttribute("fill", "none");
-      svgRef.current.appendChild(rect);
-
-      window.addEventListener("mousemove", onMouseMove);
-      window.addEventListener("mouseup", onMouseUp);
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!rect || !svgRef.current) return;
-      const bounds = svgRef.current.getBoundingClientRect();
-      const currX = e.clientX - bounds.left;
-      const currY = e.clientY - bounds.top;
-
-      const x = Math.min(currX, startX);
-      const y = Math.min(currY, startY);
-      const width = Math.abs(currX - startX);
-      const height = Math.abs(currY - startY);
-
-      rect.setAttribute("x", String(x));
-      rect.setAttribute("y", String(y));
-      rect.setAttribute("width", String(width));
-      rect.setAttribute("height", String(height));
-    };
-
-    const onMouseUp = () => {
-      if (rect && data && data.vs) {
-        const x0 = Math.round(parseFloat(rect.getAttribute("x")!));
-        const y0 = Math.round(parseFloat(rect.getAttribute("y")!));
-        const width = Math.round(parseFloat(rect.getAttribute("width")!));
-        const height = Math.round(parseFloat(rect.getAttribute("height")!));
-        const x1 = x0 + width;
-        const y1 = y0 + height;
-
-        // 👉 映射到数据索引
-        const rowStart = Math.floor(y0 / plotSize.height * data.vs.length);
-        const rowEnd = Math.floor(y1 / plotSize.height * data.vs.length);
-        const colStart = Math.floor(x0 / plotSize.width * data.vs[0].length);
-        const colEnd = Math.floor(x1 / plotSize.width * data.vs[0].length);
-
-        console.log("选中的数据索引：", { rowStart, rowEnd, colStart, colEnd });
-      }
-
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-
-    svg.addEventListener("mousedown", onMouseDown);
-    return () => {
-      svg.removeEventListener("mousedown", onMouseDown);
-    };
-  }, [plotSize]);
-
-  if (!data || !data.vs) {
+  if (!data) {
     return (
-      <div className="w-full h-[98%] flex items-center justify-center bg-black">
+      <div className="w-full h-full flex items-center justify-center bg-black">
         <Empty description={<span style={{ color: 'white' }}>暂无数据</span>} />
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-[98%] flex items-center justify-center overflow-auto">
-      <div className="relative">
-        <div ref={plotRef} />
+    <div
+      ref={containerRef}
+      className="relative w-full h-full flex flex-col items-center justify-center p-4 overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 z-20 flex items-center gap-2 text-white p-2">
+        <button
+          onClick={toggleMode}
+          title="切换模式"
+          className={`p-2 rounded-full ${
+            mode === 'select' ? 'bg-red-500' : 'bg-white/10 hover:bg-white/20'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-crop">
+            <path d="M6 2v14a2 2 0 0 0 2 2h14" />
+            <path d="M18 22V8a2 2 0 0 0-2-2H2" />
+          </svg>
+        </button>
+      </div>
+
+      <div
+        ref={imgWrapperRef}
+        className={`relative w-full h-full transition-transform duration-100 ${
+          mode === 'move' ? 'cursor-grab' : 'cursor-crosshair'
+        }`}
+        style={{
+          transform: `scale(${scale}) translate(${offset.x}px, ${offset.y}px)`,
+          transformOrigin: 'center center',
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onDoubleClick={handleDoubleClick}
+      >
+        <img
+          ref={imgRef}
+          src={data}
+          alt="Heatmap"
+          className="absolute top-0 left-0 w-full h-full object-fill"
+        />
         <svg
           ref={svgRef}
-          className="absolute inset-0 z-10 pointer-events-auto"
-          width={plotSize.width}
-          height={plotSize.height}
-        />
+          className="absolute inset-0 z-10 pointer-events-auto w-full h-full"
+        >
+          {selectionRect && (
+            <rect
+              x={selectionRect.x}
+              y={selectionRect.y}
+              width={selectionRect.width}
+              height={selectionRect.height}
+              fill="none"
+              stroke="red"
+              strokeDasharray="4"
+              strokeWidth="0.5"
+            />
+          )}
+        </svg>
       </div>
     </div>
   );
 };
-
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -253,7 +232,7 @@ const GPOL = React.memo(() => {
           {layout.map((item) => (
             <div
               key={item.i}
-              className="rounded-xl shadow-md hover:shadow-lg transition p-0 overflow-hidden border border-white/40 text-gray-400 relative"
+              className="rounded-xl shadow-md hover:shadow-lg transition p-0  border border-white/40 text-gray-400 relative"
             >
               <div className="drag-handle absolute bottom-1 left-1 cursor-move text-white text-xs">
                 ⠿

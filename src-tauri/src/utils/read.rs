@@ -1,7 +1,11 @@
 use std::fs::File;
 use std::io::{Read, BufRead, BufReader};
 use std::path::Path;
-
+use image::codecs::png::PngEncoder;
+use image::{GrayImage, Luma, ColorType};
+use image::ImageEncoder; // 👈 关键 trait
+use std::io::Cursor;
+use base64::Engine;
 // 定义一个函数，用于读取gpol文件
 pub fn read_gpol<P: AsRef<Path>>(filename: P) -> Result<(Vec<f32>, Vec<f32>, (usize, usize, usize)), Box<dyn std::error::Error>> {
     // 打开文件
@@ -60,4 +64,43 @@ pub fn read_txt<P: AsRef<Path>>(filename: P) -> Result<Vec<Vec<f32>>, Box<dyn st
     }
 
     Ok(data)
+}
+
+
+pub fn vs_to_base64(vs: Vec<Vec<f32>>) -> String {
+    let height = vs.len();
+    let width = if height > 0 { vs[0].len() } else { return String::new(); };
+
+    let mut image = GrayImage::new(width as u32, height as u32);
+
+    // 找最小最大值进行归一化
+    let min_val = vs.iter().flatten().cloned().fold(f32::INFINITY, f32::min);
+    let max_val = vs.iter().flatten().cloned().fold(f32::NEG_INFINITY, f32::max);
+
+    for (y, row) in vs.iter().enumerate() {
+        for (x, val) in row.iter().enumerate() {
+            let norm = if max_val > min_val {
+                ((val - min_val) / (max_val - min_val) * 255.0).round() as u8
+            } else {
+                0
+            };
+            image.put_pixel(x as u32, y as u32, Luma([norm]));
+        }
+    }
+
+    let mut buffer = Cursor::new(Vec::new());
+    let encoder = PngEncoder::new(&mut buffer);
+
+    // ✅ 使用新 API：write_image（替代已废弃的 encode）
+    encoder
+        .write_image(
+            &image,
+            width as u32,
+            height as u32,
+            ColorType::L8.into(),
+        )
+        .expect("Failed to encode PNG image");
+
+    let encoded = base64::engine::general_purpose::STANDARD.encode(buffer.get_ref());
+    format!("data:image/png;base64,{}", encoded)
 }
